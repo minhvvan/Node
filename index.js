@@ -8,8 +8,9 @@ const mongoose = require('mongoose')
 app.use(bodyParser.urlencoded({extended: true}))
 //application/json
 app.use(bodyParser.json())
+const config = require('./config/key')
 
-mongoose.connect('mongodb+srv://minhwan:asd1234@first.li0k4.mongodb.net/First?retryWrites=true&w=majority',{
+mongoose.connect(config.mongoURI,{
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
