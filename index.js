@@ -5,12 +5,15 @@ const bodyParser = require('body-parser')
 const { User } = require("./models/User")
 const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
+const { auth } = require('./middleware/auth')
 //application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
 //application/json
 app.use(bodyParser.json());
 app.use(cookieParser())
 const config = require('./config/key')
+
+
 
 mongoose.connect(config.mongoURI,{
     useNewUrlParser: true,
@@ -22,7 +25,7 @@ mongoose.connect(config.mongoURI,{
 
 app.get('/', (req, res) => res.send('Hello World!'))
 
-app.post('/register', (req, res) => {
+app.post('/api/users/register', (req, res) => {
     //회원 가입 관련 정보 clinet --> db
     const user = new User(req.body)
     console.log(req.body)
@@ -37,7 +40,7 @@ app.post('/register', (req, res) => {
 
 })
 
-app.post('/login', (req, res) => {
+app.post('/api/users/login', (req, res) => {
     //요청된 이메일을 DB에서 찾는다
     User.findOne({ email: req.body.email }, (err, user)=> {
         if(!user){
@@ -64,5 +67,17 @@ app.post('/login', (req, res) => {
         })
     })
 })
+
+app.get('/api/users/auth', auth, (req, res) => {
+    res.status(200).json({
+        _id: req.user._id,
+        //0 => User, 1 => Admin
+        isAdmin: req.user.role === 0 ? false : true,
+        isAuth : true,
+        email: req.user.email,
+        name: req.user.name
+    })
+})
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
