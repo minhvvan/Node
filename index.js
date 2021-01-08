@@ -14,7 +14,6 @@ app.use(cookieParser())
 const config = require('./config/key')
 
 
-
 mongoose.connect(config.mongoURI,{
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -23,8 +22,8 @@ mongoose.connect(config.mongoURI,{
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
 
-app.get('/', (req, res) => res.send('Hello World!'))
 
+//회원가입
 app.post('/api/users/register', (req, res) => {
     //회원 가입 관련 정보 clinet --> db
     const user = new User(req.body)
@@ -40,6 +39,7 @@ app.post('/api/users/register', (req, res) => {
 
 })
 
+//로그인
 app.post('/api/users/login', (req, res) => {
     //요청된 이메일을 DB에서 찾는다
     User.findOne({ email: req.body.email }, (err, user)=> {
@@ -68,6 +68,8 @@ app.post('/api/users/login', (req, res) => {
     })
 })
 
+
+//인증
 app.get('/api/users/auth', auth, (req, res) => {
     res.status(200).json({
         _id: req.user._id,
@@ -77,6 +79,18 @@ app.get('/api/users/auth', auth, (req, res) => {
         email: req.user.email,
         name: req.user.name
     })
+})
+
+
+app.get('/api/users/logout', auth, (req, res) => {
+    User.findOneAndUpdate({_id: req.user._id},
+        {token: ""},
+        (err, user) => {
+            if(err) return res.json({success: false, err})
+            return res.status(200).send({
+                success: true
+            })
+        })
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
