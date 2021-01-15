@@ -10,16 +10,17 @@ import promiseMiddleware from 'redux-promise';
 import ReduxThunk from 'redux-thunk';
 import Reducer from './_reducer';
 
-const createStorewithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore)
+const createStoreWithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore)
 
 ReactDOM.render(
-    <Provider store={createStorewithMiddleware(Reducer,
-        window.__REDUX_DEVTOOLS_EXTENSION__ &&
-        window.__REDUX_DEVTOOLS_EXTENSION__()
+    <Provider 
+        store={createStoreWithMiddleware(Reducer,
+            window.__REDUX_DEVTOOLS_EXTENSION__ &&
+            window.__REDUX_DEVTOOLS_EXTENSION__()
         )}
     >
         <App />
     </Provider>
-);
+    , document.getElementById('root'));
 
 reportWebVitals();
